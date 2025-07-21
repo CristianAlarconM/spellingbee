@@ -77,6 +77,12 @@
 <div id="resultado">Esperando...</div>
 <div id="contador"></div>
 
+<!-- Sonido de ruleta -->
+<audio id="ruletaSound">
+  <source src="https://actions.google.com/sounds/v1/ambiences/roulette_wheel.ogg" type="audio/ogg">
+  <source src="https://actions.google.com/sounds/v1/ambiences/roulette_wheel.mp3" type="audio/mpeg">
+</audio>
+
 <script>
   let palabras = [
     "accurate","across","addition","adventure","alphabet","amazing","answer","athlete","balloon","believe",
@@ -106,6 +112,7 @@
   let contador = document.getElementById("contador");
   let girarBtn = document.getElementById("girarBtn");
   let activarVozBtn = document.getElementById("activarVozBtn");
+  let ruletaSound = document.getElementById("ruletaSound");
 
   let selectedVoice = null;
 
@@ -134,22 +141,26 @@
 
   function loadVoices() {
     let voices = speechSynthesis.getVoices();
-    selectedVoice = voices.find(v => v.lang === 'en-US' || v.lang === 'en-GB') || voices[0];
+    // Buscar voces más naturales
+    selectedVoice = voices.find(v => v.name.includes("Google US English")) ||
+                    voices.find(v => v.name.includes("Samantha")) || // iOS
+                    voices.find(v => v.lang === "en-US") ||
+                    voices.find(v => v.lang === "en-GB") ||
+                    voices[0];
   }
 
-  // Cargar voces (algunos navegadores necesitan esperar el evento)
   speechSynthesis.onvoiceschanged = loadVoices;
 
   function speakWord(word) {
     if (!selectedVoice) loadVoices();
     let utter = new SpeechSynthesisUtterance(word);
-    utter.lang = "en-US";
     utter.voice = selectedVoice;
-    utter.rate = 0.9;
+    utter.lang = "en-US";
+    utter.rate = 0.85; // un poco más pausado
     speechSynthesis.speak(utter);
   }
 
-  // Activar voz en móviles (se necesita interacción inicial)
+  // Activar voz en móviles
   activarVozBtn.addEventListener("click", () => {
     speakWord("Voice activated");
     girarBtn.disabled = false;
@@ -166,7 +177,11 @@
 
     let elegido = Math.floor(Math.random() * palabras.length);
     let palabra = palabras[elegido];
-    palabras.splice(elegido, 1); // quitarla para que no se repita
+    palabras.splice(elegido, 1);
+
+    // Sonido de ruleta
+    ruletaSound.currentTime = 0;
+    ruletaSound.play();
 
     // Animación de giro
     let vueltas = 4 * 360; 
@@ -177,11 +192,16 @@
     ruleta.style.transform = `rotate(${totalGiro}deg)`;
 
     setTimeout(() => {
+      ruletaSound.pause();
       resultado.textContent = `🎉 ${palabra.toUpperCase()} 🎉`;
       speakWord(palabra); // pronunciar palabra en inglés
-      dibujarRuleta(); // Redibujar con las palabras restantes
+      dibujarRuleta();
     }, 3000);
   });
+</script>
+</body>
+</html>
+
 </script>
 </body>
 </html>
