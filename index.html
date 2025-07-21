@@ -35,7 +35,7 @@
     transition: transform 3s ease-out;
     overflow: hidden;
   }
-  #girarBtn {
+  button {
     background: #007BFF;
     color: white;
     padding: 15px 30px;
@@ -43,10 +43,7 @@
     border-radius: 10px;
     font-size: 18px;
     cursor: pointer;
-  }
-  #girarBtn:disabled {
-    background: #ccc;
-    cursor: not-allowed;
+    margin: 10px;
   }
   #resultado {
     margin-top: 30px;
@@ -70,17 +67,17 @@
 <body>
 
 <h1>🎯 Ruleta Spelling Bee 2025</h1>
-<p>Haz clic para girar y seleccionar una palabra al azar</p>
+<p>Presiona primero “Activar voz” para que funcione en celular</p>
 
+<button id="activarVozBtn">🔊 Activar voz</button>
 <div id="pointer"></div>
 <div id="ruleta"></div>
-<button id="girarBtn">🎲 Girar la ruleta</button>
+<button id="girarBtn" disabled>🎲 Girar la ruleta</button>
 
 <div id="resultado">Esperando...</div>
 <div id="contador"></div>
 
 <script>
-  // Lista de palabras
   let palabras = [
     "accurate","across","addition","adventure","alphabet","amazing","answer","athlete","balloon","believe",
     "biodiversity","biology","bizarre","blanket","bravery","breakfast","breeze","brilliant","calculate","carbon",
@@ -108,12 +105,14 @@
   let resultado = document.getElementById("resultado");
   let contador = document.getElementById("contador");
   let girarBtn = document.getElementById("girarBtn");
+  let activarVozBtn = document.getElementById("activarVozBtn");
+
+  let selectedVoice = null;
 
   function actualizarContador() {
     contador.textContent = `Quedan ${palabras.length} palabras.`;
   }
 
-  // Dibujar segmentos con colores suaves
   function dibujarRuleta() {
     ruleta.innerHTML = ""; 
     let total = palabras.length;
@@ -133,12 +132,30 @@
 
   dibujarRuleta();
 
+  function loadVoices() {
+    let voices = speechSynthesis.getVoices();
+    selectedVoice = voices.find(v => v.lang === 'en-US' || v.lang === 'en-GB') || voices[0];
+  }
+
+  // Cargar voces (algunos navegadores necesitan esperar el evento)
+  speechSynthesis.onvoiceschanged = loadVoices;
+
   function speakWord(word) {
+    if (!selectedVoice) loadVoices();
     let utter = new SpeechSynthesisUtterance(word);
-    utter.lang = "en-US"; // voz en inglés
-    utter.rate = 0.9; // velocidad un poco más lenta
+    utter.lang = "en-US";
+    utter.voice = selectedVoice;
+    utter.rate = 0.9;
     speechSynthesis.speak(utter);
   }
+
+  // Activar voz en móviles (se necesita interacción inicial)
+  activarVozBtn.addEventListener("click", () => {
+    speakWord("Voice activated");
+    girarBtn.disabled = false;
+    activarVozBtn.disabled = true;
+    activarVozBtn.textContent = "✅ Voz activada";
+  });
 
   girarBtn.addEventListener("click", () => {
     if (palabras.length === 0) {
@@ -168,3 +185,4 @@
 </script>
 </body>
 </html>
+
