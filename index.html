@@ -2,13 +2,17 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Ruleta de Deletreo</title>
+  <title>Ruleta Spelling Bee</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
       margin-top: 50px;
       background: #f0f4f8;
+    }
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
     }
     #ruleta {
       width: 300px;
@@ -24,25 +28,34 @@
     }
     #palabra {
       display: none;
-      font-size: 60px;
+      font-size: 70px;
       font-weight: bold;
       color: #fff;
       background: #023047;
-      padding: 50px;
+      padding: 60px;
       border-radius: 20px;
-      box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
-      margin-top: 100px;
+      box-shadow: 0px 0px 25px rgba(0,0,0,0.3);
+      margin-top: 120px;
+    }
+    button {
+      font-size: 20px;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    #girar {
+      background: #ff9f1c;
+      color: #fff;
+    }
+    #girar:hover {
+      background: #d9820d;
     }
     #siguiente {
       display: none;
-      margin-top: 30px;
-      font-size: 20px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
       background: #219ebc;
       color: #fff;
-      cursor: pointer;
     }
     #siguiente:hover {
       background: #126782;
@@ -50,29 +63,58 @@
   </style>
 </head>
 <body>
-  <h1>Ruleta del Concurso de Deletreo</h1>
+  <h1>🎯 Ruleta Spelling Bee 2025</h1>
   <div id="ruleta">🎡</div>
-  <button onclick="girar()">Girar</button>
+  <button id="girar" onclick="girar()">Girar</button>
 
   <div id="palabra"></div>
   <button id="siguiente" onclick="reiniciar()">Siguiente</button>
 
   <script>
-    const palabras = ["Elefante", "Mariposa", "Hipopótamo", "Biblioteca", "Ornitorrinco", "Helicóptero"];
+    let palabras = [
+      "accurate","across","addition","adventure","alphabet","amazing","answer","athlete","balloon","believe",
+      "biodiversity","biology","bizarre","blanket","bravery","breakfast","breeze","brilliant","calculate","carbon",
+      "channel","clever","climate","conductor","cooperation","courage","cousin","cupboard","dangerous","decimal",
+      "democracy","depth","desert","diagram","disappear","discover","eclipse","electricity","elephant","empire",
+      "encyclopedia","endangered","energy","enough","enthusiastic","environment","equation","exercise","experiment","explorer",
+      "favorite","fiction","foggy","fossil","fraction","fragile","freedom","galaxy","gallon","generous",
+      "geometry","giraffe","glacier","gravity","habitat","harvest","heroic","honest","horizon","humidity",
+      "hunger","hypothesis","icicle","imagine","important","infinite","internet","invention","island","jealous",
+      "journal","journalistic","journey","jungle","justice","karate","keyboard","kilogram","kindness","kitchen",
+      "knife","knowledge","knowledgeable","language","lantern","legend","library","lighthouse","literature","logic",
+      "loyal","magnet","mature","measurement","meteor","mineral","mirror","molecule","mountain","mystery",
+      "nation","nature","negative","nervous","network","noble","nutrition","observatory","observe","obvious",
+      "ocean","optimistic","orbit","organism","oxygen","parade","percentage","planet","poetry","polite",
+      "prairie","puzzle","quake","quest","question","questionnaire","quick","quiet","radius","receipt",
+      "recycle","refuge","renewable","responsibility","responsible","rhythm","robot","satellite","scientist","shelter",
+      "signal","sincere","sphere","squirrel","sustainability","symbol","telescope","temperature","texture","thirsty",
+      "thoughtful","tornado","traffic","triangle","umbrella","understanding","uniform","unique","unit","update",
+      "uplift","vacation","valuable","variable","velocity","village","vivid","volcano","warrior","wave",
+      "weather","weight","wilderness","wildlife","wise","wonder","x-ray","xenon","xerox","xylophone",
+      "yacht","yawn","yearly","yield","yogurt","youth","zebra","zipper","zone"
+    ];
+
     let angulo = 0;
 
     function girar() {
+      if (palabras.length === 0) {
+        alert("✅ Ya no quedan más palabras en la ruleta.");
+        return;
+      }
+
       const vueltas = Math.floor(Math.random() * 5) + 5;
       const extra = Math.floor(Math.random() * 360);
       angulo += vueltas * 360 + extra;
       document.getElementById("ruleta").style.transform = `rotate(${angulo}deg)`;
 
-      const palabra = palabras[Math.floor(Math.random() * palabras.length)];
+      // Escoger palabra aleatoria de la lista y eliminarla
+      const indice = Math.floor(Math.random() * palabras.length);
+      const palabra = palabras.splice(indice, 1)[0];
 
       setTimeout(() => {
         document.getElementById("ruleta").style.display = "none";
-        document.querySelector("button").style.display = "none"; // Esconde botón girar
-        document.getElementById("palabra").innerText = palabra;
+        document.getElementById("girar").style.display = "none";
+        document.getElementById("palabra").innerText = palabra.toUpperCase();
         document.getElementById("palabra").style.display = "inline-block";
         document.getElementById("siguiente").style.display = "inline-block";
       }, 10000); // 10 segundos
@@ -80,13 +122,15 @@
 
     function reiniciar() {
       document.getElementById("ruleta").style.display = "flex";
-      document.querySelector("button").style.display = "inline-block";
+      document.getElementById("girar").style.display = "inline-block";
       document.getElementById("palabra").style.display = "none";
       document.getElementById("siguiente").style.display = "none";
     }
   </script>
 </body>
 </html>
+
+
 
 
 
