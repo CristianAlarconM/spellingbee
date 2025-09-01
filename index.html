@@ -62,6 +62,40 @@
     font-size: 18px;
     color: #666;
   }
+  #palabraGrande {
+    display: none;
+    font-size: 80px;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(135deg, #007BFF, #00C6FF);
+    padding: 40px 60px;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    margin: 40px auto;
+    max-width: 90%;
+    word-wrap: break-word;
+    animation: aparecer 1s ease-in-out;
+  }
+  #siguienteBtn {
+    display: none;
+    background: #28a745;
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 12px;
+    font-size: 22px;
+    cursor: pointer;
+    margin-top: 30px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    transition: background 0.3s;
+  }
+  #siguienteBtn:hover {
+    background: #218838;
+  }
+  @keyframes aparecer {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
 </style>
 </head>
 <body>
@@ -77,6 +111,9 @@
 <div id="resultado">Esperando...</div>
 <div id="contador"></div>
 
+<div id="palabraGrande">WORD</div>
+<button id="siguienteBtn">➡️ Siguiente</button>
+
 <!-- Sonido de ruleta -->
 <audio id="ruletaSound">
   <source src="https://actions.google.com/sounds/v1/ambiences/roulette_wheel.ogg" type="audio/ogg">
@@ -85,26 +122,18 @@
 
 <script>
   let palabras = [
-    "accurate","across","addition","adventure","alphabet","amazing","answer","athlete","balloon","believe",
-    "biodiversity","biology","bizarre","blanket","bravery","breakfast","breeze","brilliant","calculate","carbon",
-    "channel","clever","climate","conductor","cooperation","courage","cousin","cupboard","dangerous","decimal",
-    "democracy","depth","desert","diagram","disappear","discover","eclipse","electricity","elephant","empire",
-    "encyclopedia","endangered","energy","enough","enthusiastic","environment","equation","exercise","experiment","explorer",
-    "favorite","fiction","foggy","fossil","fraction","fragile","freedom","galaxy","gallon","generous",
-    "geometry","giraffe","glacier","gravity","habitat","harvest","heroic","honest","horizon","humidity",
-    "hunger","hypothesis","icicle","imagine","important","infinite","internet","invention","island","jealous",
-    "journal","journalistic","journey","jungle","justice","karate","keyboard","kilogram","kindness","kitchen",
-    "knife","knowledge","knowledgeable","language","lantern","legend","library","lighthouse","literature","logic",
-    "loyal","magnet","mature","measurement","meteor","mineral","mirror","molecule","mountain","mystery",
-    "nation","nature","negative","nervous","network","noble","nutrition","observatory","observe","obvious",
-    "ocean","optimistic","orbit","organism","oxygen","parade","percentage","planet","poetry","polite",
-    "prairie","puzzle","quake","quest","question","questionnaire","quick","quiet","radius","receipt",
-    "recycle","refuge","renewable","responsibility","responsible","rhythm","robot","satellite","scientist","shelter",
-    "signal","sincere","sphere","squirrel","sustainability","symbol","telescope","temperature","texture","thirsty",
-    "thoughtful","tornado","traffic","triangle","umbrella","understanding","uniform","unique","unit","update",
-    "uplift","vacation","valuable","variable","velocity","village","vivid","volcano","warrior","wave",
-    "weather","weight","wilderness","wildlife","wise","wonder","x-ray","xenon","xerox","xylophone",
-    "yacht","yawn","yearly","yield","yogurt","youth","zebra","zipper","zone"
+    "accurate","adventure","alphabet","amazing","answer","athlete","balloon","believe","biology","bravery",
+    "calculate","carbon","channel","climate","cooperation","courage","decimal","democracy","diagram","discover",
+    "eclipse","electricity","elephant","encyclopedia","energy","environment","equation","exercise","explorer","favorite",
+    "fiction","fraction","freedom","galaxy","generous","geometry","gravity","habitat","harvest","horizon",
+    "important","invention","island","journal","journey","justice","keyboard","kindness","knowledge","language",
+    "legend","library","literature","logic","magnet","measurement","meteor","molecule","mountain","mystery",
+    "nature","nervous","nutrition","observatory","ocean","optimistic","orbit","organism","oxygen","parade",
+    "percentage","planet","poetry","polite","puzzle","question","quiet","radius","receipt","recycle",
+    "renewable","responsibility","rhythm","satellite","scientist","shelter","signal","sincere","sphere","squirrel",
+    "sustainability","symbol","telescope","temperature","tornado","traffic","triangle","umbrella","unique","update",
+    "vacation","valuable","variable","velocity","village","volcano","warrior","weather","wilderness","wonder",
+    "x-ray","xylophone","yacht","yawn","yield","yogurt","youth","zebra","zipper","zone"
   ];
 
   let ruleta = document.getElementById("ruleta");
@@ -113,6 +142,8 @@
   let girarBtn = document.getElementById("girarBtn");
   let activarVozBtn = document.getElementById("activarVozBtn");
   let ruletaSound = document.getElementById("ruletaSound");
+  let palabraGrande = document.getElementById("palabraGrande");
+  let siguienteBtn = document.getElementById("siguienteBtn");
 
   let selectedVoice = null;
 
@@ -129,7 +160,7 @@
       segment.style.position = "absolute";
       segment.style.width = "50%";
       segment.style.height = "50%";
-      segment.style.background = `hsl(${(i * 10) % 360}, 50%, 85%)`; // tonos pastel
+      segment.style.background = `hsl(${(i * 10) % 360}, 50%, 85%)`;
       segment.style.transformOrigin = "100% 100%";
       segment.style.transform = `rotate(${i * angleStep}deg) skewY(${90 - angleStep}deg)`;
       ruleta.appendChild(segment);
@@ -141,9 +172,8 @@
 
   function loadVoices() {
     let voices = speechSynthesis.getVoices();
-    // Buscar voces más naturales
     selectedVoice = voices.find(v => v.name.includes("Google US English")) ||
-                    voices.find(v => v.name.includes("Samantha")) || // iOS
+                    voices.find(v => v.name.includes("Samantha")) ||
                     voices.find(v => v.lang === "en-US") ||
                     voices.find(v => v.lang === "en-GB") ||
                     voices[0];
@@ -156,11 +186,10 @@
     let utter = new SpeechSynthesisUtterance(word);
     utter.voice = selectedVoice;
     utter.lang = "en-US";
-    utter.rate = 0.85; // un poco más pausado
+    utter.rate = 0.85;
     speechSynthesis.speak(utter);
   }
 
-  // Activar voz en móviles
   activarVozBtn.addEventListener("click", () => {
     speakWord("Voice activated");
     girarBtn.disabled = false;
@@ -179,11 +208,9 @@
     let palabra = palabras[elegido];
     palabras.splice(elegido, 1);
 
-    // Sonido de ruleta
     ruletaSound.currentTime = 0;
     ruletaSound.play();
 
-    // Animación de giro
     let vueltas = 4 * 360; 
     let extra = Math.floor(Math.random() * 360); 
     let totalGiro = vueltas + extra;
@@ -194,15 +221,35 @@
     setTimeout(() => {
       ruletaSound.pause();
       resultado.textContent = `🎉 ${palabra.toUpperCase()} 🎉`;
-      speakWord(palabra); // pronunciar palabra en inglés
+      speakWord(palabra);
       dibujarRuleta();
+
+      // Después de 10 segundos mostrar palabra gigante y botón siguiente
+      setTimeout(() => {
+        ruleta.style.display = "none";
+        document.getElementById("pointer").style.display = "none";
+        resultado.style.display = "none";
+
+        palabraGrande.style.display = "block";
+        palabraGrande.textContent = palabra.toUpperCase();
+        siguienteBtn.style.display = "inline-block";
+        girarBtn.disabled = true;
+      }, 10000);
     }, 3000);
+  });
+
+  siguienteBtn.addEventListener("click", () => {
+    palabraGrande.style.display = "none";
+    siguienteBtn.style.display = "none";
+    ruleta.style.display = "block";
+    document.getElementById("pointer").style.display = "block";
+    resultado.style.display = "block";
+    resultado.textContent = "Esperando...";
+    girarBtn.disabled = false;
   });
 </script>
 </body>
 </html>
 
-</script>
-</body>
-</html>
+
 
